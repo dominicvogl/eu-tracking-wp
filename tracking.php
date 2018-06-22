@@ -12,70 +12,50 @@ Version: 1.0
 Author URI: http://dominicvogl.de/
 */
 
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+} // Exit if accessed directly
 
-function hello_dolly_get_lyric() {
-	/** These are the lyrics to Hello Dolly */
-	$lyrics = "Hello, Dolly
-Well, hello, Dolly
-It's so nice to have you back where you belong
-You're lookin' swell, Dolly
-I can tell, Dolly
-You're still glowin', you're still crowin'
-You're still goin' strong
-I feel the room swayin'
-While the band's playin'
-One of our old favorite songs from way back when
-So, take her wrap, fellas
-Dolly, never go away again 
-Hello, Dolly
-Well, hello, Dolly
-It's so nice to have you back where you belong
-You're lookin' swell, Dolly
-I can tell, Dolly
-You're still glowin', you're still crowin'
-You're still goin' strong
-I feel the room swayin'
-While the band's playin'
-One of our old favorite songs from way back when
-So, golly, gee, fellas
-Have a little faith in me, fellas
-Dolly, never go away
-Promise, you'll never go away
-Dolly'll never go away again";
+if ( ! class_exists( 'EU_TRACKING_WP' ) ) :
 
-	// Here we split it into lines
-	$lyrics = explode( "\n", $lyrics );
+	class EU_TRACKING_WP {
 
-	// And then randomly choose a line
-	return wptexturize( $lyrics[ mt_rand( 0, count( $lyrics ) - 1 ) ] );
-}
+		function __construct() {
 
-// This just echoes the chosen line, we'll position it later
-function hello_dolly() {
-	$chosen = hello_dolly_get_lyric();
-	echo "<p id='dolly'>$chosen</p>";
-}
+			add_action( 'wp_head', array($this, 'google_analytics') );
 
-// Now we set that function up to execute when the admin_notices action is called
-add_action( 'admin_notices', 'hello_dolly' );
+		}
 
-// We need some CSS to position the paragraph
-function dolly_css() {
-	// This makes sure that the positioning is also good for right-to-left languages
-	$x = is_rtl() ? 'left' : 'right';
+		function google_analytics() {
 
-	echo "
-	<style type='text/css'>
-	#dolly {
-		float: $x;
-		padding-$x: 15px;
-		padding-top: 5px;		
-		margin: 0;
-		font-size: 11px;
+			$propertyID = 'UA-18703653-4';
+			?>
+
+           <script>
+               (function (i, s, o, g, r, a, m) {
+                   i['GoogleAnalyticsObject'] = r;
+                   i[r] = i[r] || function () {
+                       (i[r].q = i[r].q || []).push(arguments)
+                   }, i[r].l = 1 * new Date();
+                   a = s.createElement(o),
+                       m = s.getElementsByTagName(o)[0];
+                   a.async = 1;
+                   a.src = g;
+                   m.parentNode.insertBefore(a, m)
+               })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+               ga('create', '<?php echo $propertyID; ?>', 'auto');
+               ga('set', 'anonymizeIp', true);
+               ga('send', 'pageview');
+
+           </script>
+
+			<?php
+
+		}
+
 	}
-	</style>
-	";
-}
 
-add_action( 'admin_head', 'dolly_css' );
+	$EU_TRACKING_WP = new EU_TRACKING_WP();
+
+endif;
