@@ -1,0 +1,11 @@
+{
+  "name": "eu-tracking-wp",
+  "version": "1.0.0",
+  "description": "Track your userdata the european way",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-dominicvogl:dominicvogl/eu-tracking-wp.git"
+  },
+  "author": "Dominic Vogl",
+  "license": "ISC"
+}

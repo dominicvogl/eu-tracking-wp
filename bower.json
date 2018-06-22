@@ -1,0 +1,13 @@
+{
+  "name": "eu-tracking-wp",
+  "description": "Track your userdata the european way",
+  "main": "",
+  "authors": [
+    "Dominic Vogl"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/dominicvogl/eu-tracking-wp.git",
+  "dependencies": {
+    "cookieconsent": "^3.0.6"
+  }
+}
