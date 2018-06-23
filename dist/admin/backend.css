@@ -1,7 +1,12 @@
-.etwp--admin-wrapper {
+.etwp--admin-wrapper input[type=text],
+.etwp--admin-wrapper textarea {
+    min-width: 400px;
+}
+
+.etwp--admin-wrapper textarea {
+    min-height: 120px;
 }
 
 .etwp--admin-wrapper h1 {
-    background: green;
-    font-size: 1.9em;
+    font-size: 2em;
 }
