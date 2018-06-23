@@ -20,10 +20,73 @@ if ( ! class_exists( 'EU_TRACKING_WP' ) ) :
 
 class EU_TRACKING_WP {
 
+   var $version = '1.0';
+
+   var $settings = array();
+
    function __construct() {
 
+	   $version = $this->version;
+
+	   $basename = plugin_basename( __FILE__ );
+	   $path     = plugin_dir_path( __FILE__ );
+	   $url      = plugin_dir_url( __FILE__ );
+	   $slug     = dirname( $basename );
+
+	   $this->settings = array (
+
+		   // Basics
+		   'name'     => __( 'EU Tracking WP', 'ETWP' ),
+		   'version'  => $version,
+
+		   // urls
+		   'file'     => __FILE__,
+		   'basename' => $basename,
+		   'path'     => $path,
+		   'url'      => $url,
+		   'slug'     => $slug
+
+	   );
+
 	   add_action( 'wp_head', array( $this, 'google_analytics' ) );
-	   add_action( 'admin_menu', array( $this, 'my_cool_plugin_create_menu' ) );
+	   add_action( 'admin_menu', array( $this, 'ETWP_create_menu' ) );
+
+	   add_action( 'init', array($this, 'register_assets'));
+
+   }
+
+   function register_assets() {
+
+	   if (is_admin()) {
+
+		   $files = array(
+
+			   array(
+				   'handle' => 'ETWP-backend',
+				   'src' => plugin_dir_url(__FILE__) . 'dist/backend.css',
+				   'deps' => array(),
+			   ),
+			   array(
+				   'handle' => 'styles',
+				   'src' => get_template_directory_uri() . '/dist/css/app.css',
+				   'deps' => array(),
+			   )
+
+		   );
+
+
+
+	   }
+
+	   foreach ($files as $file) {
+
+		   wp_register_style($file['handle'], $file['src'], $file['deps'], TEMPLATE_VERSION);
+		   wp_enqueue_style($file['handle']);
+
+	   }
+
+      wp_register_style('ETWP-backend', plugin_dir_url(__FILE__) . 'dist/backend.css', array(), '1.0');
+	   wp_enqueue_style('ETWP-backend');
 
    }
 
@@ -60,10 +123,16 @@ class EU_TRACKING_WP {
    }
 
    // create custom plugin settings menu
-   function my_cool_plugin_create_menu() {
+   function ETWP_create_menu() {
 
       //create new top-level menu
-      add_menu_page('My Cool Plugin Settings', 'Cool Settings', 'administrator', __FILE__, array($this, 'my_cool_plugin_settings_page') , plugins_url('/images/icon.png', __FILE__) );
+      add_menu_page(
+	      'My Cool Plugin Settings',
+         __('Tracking Settings', 'ETWP'),
+         'administrator',
+         __FILE__, array($this, 'my_cool_plugin_settings_page'),
+         plugins_url('/images/icon.png', __FILE__)
+      );
 
       //call register settings function
       add_action( 'admin_init', array($this, 'register_my_cool_plugin_settings') );
@@ -78,7 +147,7 @@ class EU_TRACKING_WP {
 
    function my_cool_plugin_settings_page() {
    ?>
-   <div class="wrap">
+   <div class="etwp--admin-wrapper">
       <h1><?php _e('EU Tracking WP', 'ETWP'); ?></h1>
 
       <form method="post" action="options.php">
