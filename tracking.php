@@ -68,7 +68,7 @@ class EU_TRACKING_WP {
    }
 
    function init_cookieconsent() {
-
+	   echo getcwd();
       ?>
       <script class="js--cookieconsent">
 
@@ -233,7 +233,7 @@ class EU_TRACKING_WP {
          __('Tracking Settings', 'ETWP'),
          'administrator',
          __FILE__, array($this, 'my_cool_plugin_settings_page'),
-         plugins_url('/images/icon.png', __FILE__)
+         'dashicons-chart-line'
       );
 
       //call register settings function
