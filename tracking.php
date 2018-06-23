@@ -71,25 +71,84 @@ class EU_TRACKING_WP {
 
       ?>
       <script>
+
+          var load_Marketing_Tracking = function() {
+
+              var gaProperty = 'UA-18703653-4';
+              var disableStr = 'ga-disable-' + gaProperty;
+              if (document.cookie.indexOf(disableStr + '=true') > -1) {
+                  window[disableStr] = true;
+              }
+              function gaOptout() {
+                  document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+                  window[disableStr] = true;
+              }
+
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', gaProperty, 'auto');
+              ga('set', 'anonymizeIp', true);
+              ga('send', 'pageview');
+
+          };
+
           window.cookieconsent.initialise({
               container: document.getElementById("content"),
               palette:{
                   popup: {background: "#fff"},
-                  button: {background: "#aa0000"},
+                  button: {background: "#aa0000"}
               },
-              revokable:true,
-              onStatusChange: function(status) {
-                  console.log(this.hasConsented() ?
-                      'enable cookies' : 'disable cookies');
+              type: 'opt-in',
+              revokable: false,
+              onInitialise: function (status) {
+                  var type = this.options.type;
+                  var didConsent = this.hasConsented();
+                  console.log(status);
+                  console.log(this.hasConsented());
+                  if (type === 'opt-in' && status === 'allow' && didConsent) {
+                      load_Marketing_Tracking();
+                  }
+              },
+
+              onStatusChange: function(status, chosenBefore) {
+                  var type = this.options.type;
+                  var didConsent = this.hasConsented();
+                  console.log(status);
+                  console.log(chosenBefore);
+                  if (type === 'opt-in' && status === 'allow' && didConsent) {
+                      load_Marketing_Tracking();
+                  }
+              },
+
+              onRevokeChoice: function() {
+                  var type = this.options.type;
+                  if (type == 'opt-in') {
+                      // disable cookies
+                  }
+                  if (type == 'opt-out') {
+                      // loadGoogleAnalytics();
+                  }
               },
               law: {
-                  regionalLaw: false,
+                  regionalLaw: false
               },
-              location: true,
+              location: false,
               content: {
-                  message: "<?php echo esc_attr( get_option('cookie_consent_text') ); ?>"
+                  header: 'Cookies used on the website!',
+                  message: "<?php echo esc_attr( get_option('cookie_consent_text') ); ?>",
+                  dismiss: 'No cookies!',
+                  allow: 'Allow cookies',
+                  deny: 'Decline',
+                  link: 'Learn more',
+                  href: 'http://cookiesandyou.com',
+                  close: '&#x274c;'
               }
           });
+
+
       </script>
       <?php
 
@@ -168,24 +227,7 @@ class EU_TRACKING_WP {
 	      ?>
          <script class="js--google-analytics">
 
-             var gaProperty = '<?php echo $propertyID; ?>';
-             var disableStr = 'ga-disable-' + gaProperty;
-             if (document.cookie.indexOf(disableStr + '=true') > -1) {
-                 window[disableStr] = true;
-             }
-             function gaOptout() {
-                 document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
-                 window[disableStr] = true;
-             }
 
-             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-             })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-             ga('create', '<?php echo $propertyID; ?>', 'auto');
-             ga('set', 'anonymizeIp', true);
-             ga('send', 'pageview');
 
          </script>
          <?php
