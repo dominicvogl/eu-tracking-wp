@@ -13,7 +13,7 @@ Author URI: http://dominicvogl.de/
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	die('No Script Kiddys please!');
 } // Exit if accessed directly
 
 if ( ! class_exists( 'EU_TRACKING_WP' ) ) :
@@ -21,10 +21,13 @@ if ( ! class_exists( 'EU_TRACKING_WP' ) ) :
 class EU_TRACKING_WP {
 
    var $version = '1.0';
-
    var $settings = array();
 
    function __construct() {
+       // This guy does nothing
+   }
+
+	function initialize() {
 
 	   $version = $this->version;
 
@@ -51,44 +54,112 @@ class EU_TRACKING_WP {
 	   add_action( 'wp_head', array( $this, 'google_analytics' ) );
 	   add_action( 'admin_menu', array( $this, 'ETWP_create_menu' ) );
 
-	   add_action( 'init', array($this, 'register_assets'));
+	   add_action( 'init', array($this, 'load_css'));
+	   add_action( 'wp_enqueue_scripts', array($this, 'register_assets'));
+	   add_action( 'wp_footer', array($this, 'init_cookieconsent'));
 
    }
 
    function register_assets() {
+
+      $this->load_css();
+      $this->load_javascript();
+
+   }
+
+   function init_cookieconsent() {
+
+      ?>
+      <script>
+          window.cookieconsent.initialise({
+              container: document.getElementById("content"),
+              palette:{
+                  popup: {background: "#fff"},
+                  button: {background: "#aa0000"},
+              },
+              revokable:true,
+              onStatusChange: function(status) {
+                  console.log(this.hasConsented() ?
+                      'enable cookies' : 'disable cookies');
+              },
+              law: {
+                  regionalLaw: false,
+              },
+              location: true,
+              content: {
+                  message: "<?php echo esc_attr( get_option('cookie_consent_text') ); ?>"
+              }
+          });
+      </script>
+      <?php
+
+   }
+
+   function load_css() {
+
+      $files = array();
 
 	   if (is_admin()) {
 
 		   $files = array(
 
 			   array(
-				   'handle' => 'ETWP-backend',
-				   'src' => plugin_dir_url(__FILE__) . 'dist/backend.css',
-				   'deps' => array(),
-			   ),
-			   array(
-				   'handle' => 'styles',
-				   'src' => get_template_directory_uri() . '/dist/css/app.css',
+				   'handle' => 'backend',
+				   'src' => $this->settings['url'] . 'dist/admin/backend.css',
 				   'deps' => array(),
 			   )
 
 		   );
 
-
-
 	   }
+	   elseif(!is_admin()) {
+
+	      $files = array(
+
+	         array(
+               'handle' => 'cookieconsent-css',
+               'src' => $this->settings['url'] . 'dist/frontend/cookieconsent.min.css',
+               'deps' => array(),
+            )
+
+         );
+
+      }
 
 	   foreach ($files as $file) {
 
-		   wp_register_style($file['handle'], $file['src'], $file['deps'], TEMPLATE_VERSION);
+		   wp_register_style($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
 		   wp_enqueue_style($file['handle']);
 
 	   }
 
-      wp_register_style('ETWP-backend', plugin_dir_url(__FILE__) . 'dist/backend.css', array(), '1.0');
-	   wp_enqueue_style('ETWP-backend');
-
    }
+
+	function load_javascript()
+	{
+
+		if (!is_admin()) {
+
+			$files = array(
+
+				array(
+					'handle' => 'cookieconsent-js',
+					'src' => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
+					'deps' => array(),
+				)
+
+			);
+
+			foreach ($files as $file) {
+
+				wp_register_script($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
+				wp_enqueue_script($file['handle']);
+
+			}
+
+		}
+
+	}
 
    function google_analytics() {
 
@@ -178,6 +249,25 @@ class EU_TRACKING_WP {
 
 }
 
-$EU_TRACKING_WP = new EU_TRACKING_WP();
+function eu_tracking_wp() {
+
+   // globals
+   global $eu_tracking_wp;
+
+
+   // initialize
+   if( !isset($eu_tracking_wp) ) {
+	   $eu_tracking_wp = new EU_TRACKING_WP();
+	   $eu_tracking_wp->initialize();
+   }
+
+
+   // return
+   return $eu_tracking_wp;
+
+}
+
+// initialize
+eu_tracking_wp();
 
 endif;
