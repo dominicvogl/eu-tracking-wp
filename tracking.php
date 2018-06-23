@@ -106,8 +106,6 @@ class EU_TRACKING_WP {
               onInitialise: function (status) {
                   var type = this.options.type;
                   var didConsent = this.hasConsented();
-                  console.log(status);
-                  console.log(this.hasConsented());
                   if (type === 'opt-in' && status === 'allow' && didConsent) {
                       load_Marketing_Tracking();
                   }
@@ -116,22 +114,13 @@ class EU_TRACKING_WP {
               onStatusChange: function(status, chosenBefore) {
                   var type = this.options.type;
                   var didConsent = this.hasConsented();
-                  console.log(status);
-                  console.log(chosenBefore);
+                  console.log(status === 'allow' ?
+                      'enable cookies' : 'disable cookies');
+
                   if (type === 'opt-in' && status === 'allow' && didConsent) {
                       load_Marketing_Tracking();
                   }
-              },
-
-              onRevokeChoice: function() {
-                  var type = this.options.type;
-                  if (type == 'opt-in') {
-                      // disable cookies
-                  }
-                  if (type == 'opt-out') {
-                      // loadGoogleAnalytics();
-                  }
-              },
+              }
               law: {
                   regionalLaw: false
               },
