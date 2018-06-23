@@ -23,6 +23,14 @@ class EU_TRACKING_WP {
    var $version = '1.0';
    var $settings = array();
 
+	function define( $name, $value = true ) {
+
+		if( !defined($name) ) {
+			define( $name, $value );
+		}
+
+	}
+
    function __construct() {
        // This guy does nothing
    }
@@ -39,7 +47,7 @@ class EU_TRACKING_WP {
 	   $this->settings = array (
 
 		   // Basics
-		   'name'     => __( 'EU Tracking WP', 'ETWP' ),
+		   'name'     => __( 'EU Tracking WP', 'etwp' ),
 		   'version'  => $version,
 
 		   // urls
@@ -51,21 +59,114 @@ class EU_TRACKING_WP {
 
 	   );
 
-	   add_action( 'wp_head', array( $this, 'google_analytics' ) );
-	   add_action( 'admin_menu', array( $this, 'ETWP_create_menu' ) );
+	   // define constants
+      $this->define('ETWP_PATH', $path);
 
-	   add_action( 'init', array($this, 'load_css'));
-	   add_action( 'wp_enqueue_scripts', array($this, 'register_assets'));
+	   include_once( ETWP_PATH . 'includes/helpers.php');
+
+	   $this->load_plugin_textdomain();
+
+	   // Actions
+	   add_action( 'admin_menu', array( $this, 'ETWP_create_menu' ) );
+	   add_action( 'wp_head', array( $this, 'google_analytics' ) );
+	   add_action( 'init', array($this, 'register_assets') );
 	   add_action( 'wp_footer', array($this, 'init_cookieconsent'));
 
+	   // GA Output Shortcode
+	   add_shortcode( 'gaoptout', array($this, 'ga_optout') );
    }
 
-   function register_assets() {
+	function load_plugin_textdomain() {
 
-      $this->load_css();
-      $this->load_javascript();
+		// vars
+		$domain = 'etwp';
+		$locale = apply_filters( 'plugin_locale', etwp_get_locale(), $domain );
+		$mofile = $domain . '-' . $locale . '.mo';
 
-   }
+
+		// load from the languages directory first
+		load_textdomain( $domain, WP_LANG_DIR . '/plugins/' . $mofile );
+
+		// redirect missing translations
+		$mofile = str_replace('en_EN', 'en_EN', $mofile);
+
+		// load from plugin lang folder
+		load_textdomain( $domain, etwp_get_path('lang/' . $mofile) );
+
+	}
+
+	function register_assets() {
+
+		$this->load_css();
+		$this->load_javascript();
+
+	}
+
+	function load_css() {
+
+		$files = array();
+
+		if (is_admin()) {
+
+			$files = array(
+
+				array(
+					'handle' => 'backend',
+					'src' => $this->settings['url'] . 'dist/admin/backend.css',
+					'deps' => array(),
+				)
+
+			);
+
+		}
+        elseif(!is_admin()) {
+
+			$files = array(
+
+				array(
+					'handle' => 'cookieconsent-css',
+					'src' => $this->settings['url'] . 'dist/frontend/cookieconsent.min.css',
+					'deps' => array(),
+				)
+
+			);
+
+		}
+
+		foreach ($files as $file) {
+
+			wp_register_style($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
+			wp_enqueue_style($file['handle']);
+
+		}
+
+	}
+
+	function load_javascript()
+	{
+
+		if (!is_admin()) {
+
+			$files = array(
+
+				array(
+					'handle' => 'cookieconsent-js',
+					'src' => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
+					'deps' => array(),
+				)
+
+			);
+
+			foreach ($files as $file) {
+
+				wp_register_script($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
+				wp_enqueue_script($file['handle']);
+
+			}
+
+		}
+
+	}
 
    function init_cookieconsent() {
 	   echo getcwd();
@@ -107,7 +208,7 @@ class EU_TRACKING_WP {
               location: false,
               content: {
                   header: 'Cookies used on the website!',
-                  message: "<?php echo esc_attr( get_option('cookie_consent_text') ); ?>",
+                  message: "<?php echo esc_attr( get_option('cc_message') ); ?>",
                   dismiss: 'No cookies!',
                   allow: 'Allow cookies',
                   deny: 'Decline',
@@ -123,71 +224,11 @@ class EU_TRACKING_WP {
 
    }
 
-   function load_css() {
-
-      $files = array();
-
-	   if (is_admin()) {
-
-		   $files = array(
-
-			   array(
-				   'handle' => 'backend',
-				   'src' => $this->settings['url'] . 'dist/admin/backend.css',
-				   'deps' => array(),
-			   )
-
-		   );
-
-	   }
-	   elseif(!is_admin()) {
-
-	      $files = array(
-
-	         array(
-               'handle' => 'cookieconsent-css',
-               'src' => $this->settings['url'] . 'dist/frontend/cookieconsent.min.css',
-               'deps' => array(),
-            )
-
-         );
-
-      }
-
-	   foreach ($files as $file) {
-
-		   wp_register_style($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
-		   wp_enqueue_style($file['handle']);
-
-	   }
-
-   }
-
-	function load_javascript()
-	{
-
-		if (!is_admin()) {
-
-			$files = array(
-
-				array(
-					'handle' => 'cookieconsent-js',
-					'src' => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
-					'deps' => array(),
-				)
-
-			);
-
-			foreach ($files as $file) {
-
-				wp_register_script($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
-				wp_enqueue_script($file['handle']);
-
-			}
-
-		}
-
+	function ga_optout($atts, $content = null) {
+		return '<a href="javascript:gaOptout();">'.$content.'</a>';
 	}
+
+
 
    function google_analytics() {
 
@@ -197,15 +238,17 @@ class EU_TRACKING_WP {
 
              var load_Marketing_Tracking = function() {
 
-                 var gaProperty = '<?php esc_attr_e( get_option( 'ga_property' ) ); ?>';
-                 var disableStr = 'ga-disable-' + gaProperty;
                  if (document.cookie.indexOf(disableStr + '=true') > -1) {
                      window[disableStr] = true;
                  }
-                 function gaOptout() {
+
+                 var gaProperty = '<?php esc_attr_e( get_option( 'ga_property' ) ); ?>';
+                 var disableStr = 'ga-disable-' + gaProperty;
+
+                 var gaOptout = function() {
                      document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
                      window[disableStr] = true;
-                 }
+                 };
 
                  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -230,7 +273,7 @@ class EU_TRACKING_WP {
       //create new top-level menu
       add_menu_page(
 	      'My Cool Plugin Settings',
-         __('Tracking Settings', 'ETWP'),
+         __('EU Tracking', 'etwp'),
          'administrator',
          __FILE__, array($this, 'my_cool_plugin_settings_page'),
          'dashicons-chart-line'
@@ -244,26 +287,27 @@ class EU_TRACKING_WP {
    function register_my_cool_plugin_settings() {
       //register our settings
       register_setting( 'my-cool-plugin-settings-group', 'ga_property' );
-      register_setting( 'my-cool-plugin-settings-group', 'cookie_consent_text');
+      register_setting( 'my-cool-plugin-settings-group', 'cc_message');
    }
 
    function my_cool_plugin_settings_page() {
    ?>
    <div class="etwp--admin-wrapper">
-      <h1><?php _e('EU Tracking WP', 'ETWP'); ?></h1>
+      <h1><?php _e('EU Tracking WP', 'etwp'); ?></h1>
 
       <form method="post" action="options.php">
           <?php settings_fields( 'my-cool-plugin-settings-group' ); ?>
           <?php do_settings_sections( 'my-cool-plugin-settings-group' ); ?>
-          <table class="form-table">
+
+         <table class="form-table">
               <tr valign="top">
-                 <th scope="row"><? _e('Google Analytics Property ID', 'ETWP'); ?></th>
+                 <th scope="row"><? _e('Google Analytics Property ID', 'etwp'); ?></th>
                  <td><input type="text" name="ga_property" value="<?php echo esc_attr( get_option('ga_property') ); ?>" /></td>
               </tr>
 
               <tr valign="top">
-                 <th scope="row"><? _e('Your Cookie Consent Text', 'ETWP'); ?></th>
-                 <td><textarea name="cookie_consent_text"><?php echo esc_attr( get_option('cookie_consent_text') ); ?></textarea></td>
+                 <th scope="row"><? _e('Your Cookieconsent Message', 'etwp'); ?></th>
+                 <td><textarea name="cc_message"><?php echo esc_attr( get_option('cc_message') ); ?></textarea></td>
               </tr>
 
               <tr valign="top">
