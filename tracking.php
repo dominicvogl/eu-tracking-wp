@@ -169,8 +169,8 @@ class EU_TRACKING_WP {
 	}
 
    function init_cookieconsent() {
-	   echo getcwd();
-      ?>
+	   ?>
+
       <script class="js--cookieconsent">
 
           window.cookieconsent.initialise({
@@ -193,6 +193,7 @@ class EU_TRACKING_WP {
               onStatusChange: function(status, chosenBefore) {
                   var type = this.options.type;
                   var didConsent = this.hasConsented();
+                  //
                   console.log(status === 'allow' ?
                       'enable cookies' : 'disable cookies');
 
@@ -207,28 +208,25 @@ class EU_TRACKING_WP {
               },
               location: false,
               content: {
-                  header: 'Cookies used on the website!',
-                  message: "<?php echo esc_attr( get_option('cc_message') ); ?>",
-                  dismiss: 'No cookies!',
-                  allow: 'Allow cookies',
-                  deny: 'Decline',
-                  link: 'Learn more',
-                  href: 'http://cookiesandyou.com',
+                  header: "<?php etwp_cc_translations('cc_header'); ?>",
+                  message: "<?php etwp_cc_translations('cc_message'); ?>",
+                  dismiss: "<?php _e('Do not allow cookies', 'etwp'); ?>",
+                  allow: "<?php _e('Allow Cookies', 'etwp'); ?>",
+                  deny: "<?php _e('Decline', 'etwp'); ?>",
+                  link: "<?php _e('Learn more', 'etwp'); ?>",
+                  href: "<?php etwp_cc_translations('cc_url'); ?>",
                   close: '&#x274c;'
               }
           });
 
-
       </script>
-      <?php
 
+      <?php
    }
 
 	function ga_optout($atts, $content = null) {
 		return '<a href="javascript:gaOptout();">'.$content.'</a>';
 	}
-
-
 
    function google_analytics() {
 
@@ -287,6 +285,7 @@ class EU_TRACKING_WP {
    function register_my_cool_plugin_settings() {
       //register our settings
       register_setting( 'my-cool-plugin-settings-group', 'ga_property' );
+      register_setting( 'my-cool-plugin-settings-group', 'cc_header');
       register_setting( 'my-cool-plugin-settings-group', 'cc_message');
    }
 
@@ -300,21 +299,28 @@ class EU_TRACKING_WP {
           <?php do_settings_sections( 'my-cool-plugin-settings-group' ); ?>
 
          <table class="form-table">
-              <tr valign="top">
-                 <th scope="row"><? _e('Google Analytics Property ID', 'etwp'); ?></th>
-                 <td><input type="text" name="ga_property" value="<?php echo esc_attr( get_option('ga_property') ); ?>" /></td>
-              </tr>
+            <tr valign="top">
+               <th scope="row"><? _e( 'Google Analytics Property ID', 'etwp' ); ?></th>
+               <td><input type="text" name="ga_property"
+                          value="<?php echo esc_attr( get_option( 'ga_property' ) ); ?>"/></td>
+            </tr>
 
-              <tr valign="top">
-                 <th scope="row"><? _e('Your Cookieconsent Message', 'etwp'); ?></th>
-                 <td><textarea name="cc_message"><?php echo esc_attr( get_option('cc_message') ); ?></textarea></td>
-              </tr>
+            <tr valign="top">
+               <th scope="row"><?php _e('Cookie Consent Header','etwp'); ?></th>
+               <td><input type="text" name="cc_header" value="<?php echo esc_attr( get_option( 'cc_header' ) ); ?>"/></td>
+            </tr>
 
-              <tr valign="top">
-                 <th scope="row">Options, Etc.</th>
-                 <td><input type="text" name="option_etc" value="<?php echo esc_attr( get_option('option_etc') ); ?>" /></td>
-              </tr>
-          </table>
+            <tr valign="top">
+               <th scope="row"><? _e( 'Your Cookieconsent Message', 'etwp' ); ?></th>
+               <td><textarea name="cc_message"><?php echo esc_attr( get_option( 'cc_message' ) ); ?></textarea></td>
+            </tr>
+
+            <tr valign="top">
+               <th scope="row"><? _e( 'Privacy Policy URL', 'etwp' ); ?></th>
+               <td><input type="text" name="cc_url" value="<?php echo esc_attr( get_option( 'cc_url' ) ); ?>" /></td>
+            </tr>
+
+         </table>
 
           <?php submit_button(); ?>
 
@@ -329,17 +335,14 @@ function eu_tracking_wp() {
    // globals
    global $eu_tracking_wp;
 
-
    // initialize
    if( !isset($eu_tracking_wp) ) {
 	   $eu_tracking_wp = new EU_TRACKING_WP();
 	   $eu_tracking_wp->initialize();
    }
 
-
    // return
    return $eu_tracking_wp;
-
 }
 
 // initialize
