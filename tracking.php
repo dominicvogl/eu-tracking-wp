@@ -175,10 +175,7 @@ class EU_TRACKING_WP {
 
           window.cookieconsent.initialise({
               container: document.getElementById("content"),
-              palette:{
-                  popup: {background: "#fff"},
-                  button: {background: "#aa0000"}
-              },
+              palette: <?php echo !empty(get_option( 'cc_palette' )) ? get_option( 'cc_palette' ) : 'null'; ?>,
               type: 'opt-in',
               revokable: false,
               onInitialise: function (status) {
@@ -288,6 +285,7 @@ class EU_TRACKING_WP {
       register_setting( 'my-cool-plugin-settings-group', 'cc_header');
       register_setting( 'my-cool-plugin-settings-group', 'cc_message');
       register_setting( 'my-cool-plugin-settings-group', 'cc_url');
+      register_setting( 'my-cool-plugin-settings-group', 'cc_palette');
    }
 
    function my_cool_plugin_settings_page() {
@@ -314,6 +312,11 @@ class EU_TRACKING_WP {
             <tr valign="top">
                <th scope="row"><? _e( 'Your Cookieconsent Message', 'etwp' ); ?></th>
                <td><textarea name="cc_message"><?php echo esc_attr( get_option( 'cc_message' ) ); ?></textarea></td>
+            </tr>
+
+            <tr valign="top">
+               <th scope="row"><? _e( 'Color Scheme', 'etwp' ); ?></th>
+               <td><textarea name="cc_palette"><?php echo esc_attr( get_option( 'cc_palette' ) ); ?></textarea></td>
             </tr>
 
          </table>
