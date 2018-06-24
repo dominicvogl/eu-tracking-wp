@@ -214,7 +214,7 @@ class EU_TRACKING_WP {
                   allow: "<?php _e('Allow Cookies', 'etwp'); ?>",
                   deny: "<?php _e('Decline', 'etwp'); ?>",
                   link: "<?php _e('Learn more', 'etwp'); ?>",
-                  href: "<?php etwp_cc_translations('cc_url'); ?>",
+                  href: "<?php home_url(__('/privacy-policy/', 'etwp')); ?>",
                   close: '&#x274c;'
               }
           });
@@ -287,6 +287,7 @@ class EU_TRACKING_WP {
       register_setting( 'my-cool-plugin-settings-group', 'ga_property' );
       register_setting( 'my-cool-plugin-settings-group', 'cc_header');
       register_setting( 'my-cool-plugin-settings-group', 'cc_message');
+      register_setting( 'my-cool-plugin-settings-group', 'cc_url');
    }
 
    function my_cool_plugin_settings_page() {
@@ -313,11 +314,6 @@ class EU_TRACKING_WP {
             <tr valign="top">
                <th scope="row"><? _e( 'Your Cookieconsent Message', 'etwp' ); ?></th>
                <td><textarea name="cc_message"><?php echo esc_attr( get_option( 'cc_message' ) ); ?></textarea></td>
-            </tr>
-
-            <tr valign="top">
-               <th scope="row"><? _e( 'Privacy Policy URL', 'etwp' ); ?></th>
-               <td><input type="text" name="cc_url" value="<?php echo esc_attr( get_option( 'cc_url' ) ); ?>" /></td>
             </tr>
 
          </table>
