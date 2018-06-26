@@ -1,15 +1,11 @@
 <?php
-/**
- * @package Hello_Dolly
- * @version 1.7
- */
 /*
-Plugin Name: EU Tracking WP
+Plugin Name: EU Tracking for Wordpress
 Plugin URI: https://github.com/dominicvogl/german-tracking-wp.git
-Description: Integrate your Tracking the european way
+Description: Integrate your Tracking right passing the EU GDRP rules
 Author: Dominic Vogl
 Version: 1.0.1
-Author URI: http://dominicvogl.de/
+Author URI: https://www.github.com/dominicvogl/
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -78,6 +74,10 @@ class EU_TRACKING_WP {
 		add_shortcode( 'gaoptout', array( $this, 'ga_optout' ) );
 	}
 
+	/**
+	 * load plugin textdomain
+	 */
+
 	function load_plugin_textdomain() {
 
 		// vars
@@ -107,6 +107,12 @@ class EU_TRACKING_WP {
 		$this->load_javascript();
 
 	}
+
+	/**
+	 * Load CSS files they are for necessary for the plugin
+	 * @param
+	 * @return void
+	 */
 
 	function load_css() {
 
@@ -138,56 +144,64 @@ class EU_TRACKING_WP {
 	}
 
 	/**
-	 * Register passed files from array
-	 * @param $files
-	 * @return null (if error)
+	 * register passed files from array
+	 * @param $files array
+	 * @author Dominic Vogl <dv@cat-ia.de>
+	 * @since 1.0.1
 	 */
 
-	function register_styles($files) {
+	function register_styles( $files ) {
 
-		if(!is_array($files))
-			return;
-
-		foreach ($files as $file) {
-			wp_register_style($file['handle'], $file['src'], $file['deps'], $file['ver']);
-			wp_enqueue_style($file['handle']);
-		}
-
-	}
-
-	function load_javascript()
-	{
-
-		if (!is_admin()) {
-			$files = array(
-				array(
-					'handle' => 'cookieconsent-js',
-					'src' => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
-					'deps' => array(),
-					'ver' => $this->settings['version']
-				)
-			);
-
-			$this->register_scripts($files);
+		if ( ! is_array( $files ) ) {
+			foreach ( $files as $file ) {
+				wp_register_style( $file['handle'], $file['src'], $file['deps'], $file['ver'] );
+				wp_enqueue_style( $file['handle'] );
+			}
 		}
 	}
 
 	/**
-	 * @param $files array
-	 * register passed files from array
-	 * @return null (if error)
+	 * Load CSS files they are for necessary for the plugin
 	 */
 
-	function register_scripts($files) {
+	function load_javascript() {
 
-		if(!is_array($files))
-			return;
+		if ( ! is_admin() ) {
+			$files = array(
+				array(
+					'handle' => 'cookieconsent-js',
+					'src'    => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
+					'deps'   => array(),
+					'ver'    => $this->settings['version']
+				)
+			);
 
-		foreach ($files as $file) {
-			wp_register_script($file['handle'], $file['src'], $file['deps'], $file['ver']);
-			wp_enqueue_script($file['handle']);
+			$this->register_scripts( $files );
 		}
 	}
+
+	/**
+	 * register passed files from array
+	 * @param $files array
+	 * @author Dominic Vogl <dv@cat-ia.de>
+	 * @since 1.0.1
+	 */
+
+	function register_scripts( $files ) {
+
+		if ( ! is_array( $files ) ) {
+			foreach ( $files as $file ) {
+				wp_register_script( $file['handle'], $file['src'], $file['deps'], $file['ver'] );
+				wp_enqueue_script( $file['handle'] );
+			}
+		}
+	}
+
+	/**
+	 * renders js for cookieconsent
+	 * @author Dominic Vogl <dv@cat-ia.de>
+	 * @since 1.0.0
+	 */
 
 	function init_cookieconsent() {
 		?>
@@ -242,6 +256,9 @@ class EU_TRACKING_WP {
 
 	/**
 	 * Includes Google Analytics Rendering Script, if Property is available
+	 * @since 1.0.0
+	 * @version 1.0.1
+	 * @author Dominic Vogl <dv@cat-ia.de>
 	 */
 
 	function google_analytics() {
@@ -306,7 +323,10 @@ class EU_TRACKING_WP {
 
 	/**
 	 * Create custom plugin settings menu
+	 * @since 1.0.0
+	 * @author Dominic Vogl <dv@cat-ia.de>
 	 */
+
 	function ETWP_create_menu() {
 
 		//create new top-level menu
@@ -322,6 +342,11 @@ class EU_TRACKING_WP {
 		add_action( 'admin_init', array( $this, 'register_etwp_settings' ) );
 	}
 
+	/**
+	 * register settings for menu in backend
+	 * @since 1.0.0
+	 * @author Dominic Vogl <dv@cat-ia.de>
+	 */
 
 	function register_etwp_settings() {
 
@@ -341,7 +366,9 @@ class EU_TRACKING_WP {
 	}
 
 	/**
-	 * Create Fields for plugin setting page
+	 * Create fields for settings page n the backend
+	 * @since 1.0.0
+	 * @author Dominic Vogl <dv@cat-ia.de>
 	 */
 
 	function etwp_settings_page() {
@@ -388,7 +415,7 @@ class EU_TRACKING_WP {
 
 /**
  * Initialize the class and check for other instances
- * @return EU_TRACKING_WP
+ * @return EU_TRACKING_WP class
  */
 
 function eu_tracking_wp() {
