@@ -1,15 +1,11 @@
 <?php
-/**
- * @package Hello_Dolly
- * @version 1.7
- */
 /*
-Plugin Name: EU Tracking WP
+Plugin Name: EU Tracking for Wordpress
 Plugin URI: https://github.com/dominicvogl/german-tracking-wp.git
-Description: Integrate your Tracking the european way
+Description: Integrate your Tracking right passing the EU GDRP rules
 Author: Dominic Vogl
 Version: 1.0.1
-Author URI: http://dominicvogl.de/
+Author URI: https://www.github.com/dominicvogl/
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
