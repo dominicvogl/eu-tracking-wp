@@ -309,12 +309,20 @@ class EU_TRACKING_WP {
 
 
 	function register_my_cool_plugin_settings() {
-		//register our settings
-		register_setting( 'my-cool-plugin-settings-group', 'ga_property' );
-		register_setting( 'my-cool-plugin-settings-group', 'cc_header' );
-		register_setting( 'my-cool-plugin-settings-group', 'cc_message' );
-		register_setting( 'my-cool-plugin-settings-group', 'cc_url' );
-		register_setting( 'my-cool-plugin-settings-group', 'cc_palette' );
+
+		// list of settings to register
+		$inputs = array(
+			'ga_property',
+			'cc_header',
+			'cc_message',
+			'cc_url',
+			'cc_palette'
+		);
+
+		// register every element of array as setting
+		foreach($inputs as $input) {
+			register_setting( 'etwp-settings-group', $input );
+		}
 	}
 
 	function my_cool_plugin_settings_page() {
@@ -323,8 +331,8 @@ class EU_TRACKING_WP {
 			<h1><?php _e( 'EU Tracking WP', 'etwp' ); ?></h1>
 
 			<form method="post" action="options.php">
-				<?php settings_fields( 'my-cool-plugin-settings-group' ); ?>
-				<?php do_settings_sections( 'my-cool-plugin-settings-group' ); ?>
+				<?php settings_fields( 'etwp-settings-group' ); ?>
+				<?php do_settings_sections( 'etwp-settings-group' ); ?>
 
 				<table class="form-table">
 					<tr valign="top">
