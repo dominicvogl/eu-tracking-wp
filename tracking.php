@@ -226,7 +226,7 @@ class EU_TRACKING_WP {
                     allow: "<?php _e( 'Allow Cookies', 'etwp' ); ?>",
                     deny: "<?php _e( 'Decline', 'etwp' ); ?>",
                     link: "<?php _e( 'Learn more', 'etwp' ); ?>",
-                    href: "<?php home_url( __( '/privacy-policy/', 'etwp' ) ); ?>",
+                    href: "<?php echo home_url( __( '/privacy-policy/', 'etwp' ) ); ?>",
                     close: '&#x274c;'
                 },
                 onInitialise: function (status) {
