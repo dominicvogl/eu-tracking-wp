@@ -20,7 +20,7 @@ if ( ! class_exists( 'EU_TRACKING_WP' ) ) {
 
 class EU_TRACKING_WP {
 
-	var $version = '1.0';
+	var $version = '1.0.1';
 	var $settings = array();
 
 	function define( $name, $value = true ) {
@@ -113,37 +113,44 @@ class EU_TRACKING_WP {
 		$files = array();
 
 		if (is_admin()) {
-
 			$files = array(
-
 				array(
 					'handle' => 'backend',
 					'src' => $this->settings['url'] . 'dist/admin/backend.css',
 					'deps' => array(),
+					'ver' => $this->settings['version']
 				)
-
 			);
-
 		}
         elseif(!is_admin()) {
-
 			$files = array(
-
 				array(
 					'handle' => 'cookieconsent-css',
 					'src' => $this->settings['url'] . 'dist/frontend/cookieconsent.min.css',
 					'deps' => array(),
+					'ver' => $this->settings['version']
 				)
-
 			);
-
 		}
 
+		$this->register_styles($files);
+
+	}
+
+	/**
+	 * Register passed files from array
+	 * @param $files
+	 * @return null (if error)
+	 */
+
+	function register_styles($files) {
+
+		if(!is_array($files))
+			return;
+
 		foreach ($files as $file) {
-
-			wp_register_style($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
+			wp_register_style($file['handle'], $file['src'], $file['deps'], $file['ver']);
 			wp_enqueue_style($file['handle']);
-
 		}
 
 	}
@@ -152,26 +159,34 @@ class EU_TRACKING_WP {
 	{
 
 		if (!is_admin()) {
-
 			$files = array(
-
 				array(
 					'handle' => 'cookieconsent-js',
 					'src' => $this->settings['url'] . '/dist/frontend/cookieconsent.min.js',
 					'deps' => array(),
+					'ver' => $this->settings['version']
 				)
-
 			);
 
-			foreach ($files as $file) {
-
-				wp_register_script($file['handle'], $file['src'], $file['deps'], $this->settings['version']);
-				wp_enqueue_script($file['handle']);
-
-			}
-
+			$this->register_scripts($files);
 		}
+	}
 
+	/**
+	 * @param $files array
+	 * register passed files from array
+	 * @return null (if error)
+	 */
+
+	function register_scripts($files) {
+
+		if(!is_array($files))
+			return;
+
+		foreach ($files as $file) {
+			wp_register_script($file['handle'], $file['src'], $file['deps'], $file['ver']);
+			wp_enqueue_script($file['handle']);
+		}
 	}
 
 	function init_cookieconsent() {
@@ -324,6 +339,10 @@ class EU_TRACKING_WP {
 			register_setting( 'etwp-settings-group', $input );
 		}
 	}
+
+	/**
+	 * Create Fields for plugin setting page
+	 */
 
 	function etwp_settings_page() {
 		?>
