@@ -299,16 +299,16 @@ class EU_TRACKING_WP {
 			'My Cool Plugin Settings',
 			__( 'EU Tracking', 'etwp' ),
 			'administrator',
-			__FILE__, array( $this, 'my_cool_plugin_settings_page' ),
+			__FILE__, array( $this, 'etwp_settings_page' ),
 			'dashicons-chart-line'
 		);
 
 		//call register settings function
-		add_action( 'admin_init', array( $this, 'register_my_cool_plugin_settings' ) );
+		add_action( 'admin_init', array( $this, 'register_etwp_settings' ) );
 	}
 
 
-	function register_my_cool_plugin_settings() {
+	function register_etwp_settings() {
 
 		// list of settings to register
 		$inputs = array(
@@ -325,7 +325,7 @@ class EU_TRACKING_WP {
 		}
 	}
 
-	function my_cool_plugin_settings_page() {
+	function etwp_settings_page() {
 		?>
 		<div class="etwp--admin-wrapper">
 			<h1><?php _e( 'EU Tracking WP', 'etwp' ); ?></h1>
