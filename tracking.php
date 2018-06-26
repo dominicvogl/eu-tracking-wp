@@ -152,7 +152,7 @@ class EU_TRACKING_WP {
 
 	function register_styles( $files ) {
 
-		if ( ! is_array( $files ) ) {
+		if ( is_array( $files ) ) {
 			foreach ( $files as $file ) {
 				wp_register_style( $file['handle'], $file['src'], $file['deps'], $file['ver'] );
 				wp_enqueue_style( $file['handle'] );
@@ -189,7 +189,7 @@ class EU_TRACKING_WP {
 
 	function register_scripts( $files ) {
 
-		if ( ! is_array( $files ) ) {
+		if ( is_array( $files ) ) {
 			foreach ( $files as $file ) {
 				wp_register_script( $file['handle'], $file['src'], $file['deps'], $file['ver'] );
 				wp_enqueue_script( $file['handle'] );
