@@ -273,10 +273,8 @@ class EU_TRACKING_WP {
                     var didConsent = currentItem.hasConsented();
 
                     // console debugging / tracking
-                    console.group('eu-tracking-wp');
-                    console.log(status === 'allow' ?
-                        'Cookies enabled' : 'Cookies disabled');
-                    console.groupEnd();
+                    console.info(status === 'allow' ?
+                        '[<?php echo $this->version; ?>] eu-tracking-wp: Cookies enabled' : '[<?php echo $this->version; ?>] eu-tracking-wp: Cookies disabled');
 
                     if (type === 'opt-in' && status === 'allow' && didConsent) {
                         if(typeof load_Marketing_Tracking() === 'function') {
@@ -336,7 +334,7 @@ class EU_TRACKING_WP {
 		add_menu_page(
 			'My Cool Plugin Settings',
 			__( 'EU Tracking', 'etwp' ),
-			'administrator',
+			'editor',
 			__FILE__, array( $this, 'etwp_settings_page' ),
 			'dashicons-chart-line'
 		);
