@@ -271,9 +271,12 @@ class EU_TRACKING_WP {
 
                     var type = currentItem.options.type;
                     var didConsent = currentItem.hasConsented();
-                    //
+
+                    // console debugging / tracking
+                    console.group('eu-tracking-wp');
                     console.log(status === 'allow' ?
-                        'enable cookies' : 'disable cookies');
+                        'Cookies enabled' : 'Cookies disabled');
+                    console.groupEnd();
 
                     if (type === 'opt-in' && status === 'allow' && didConsent) {
                         if(typeof load_Marketing_Tracking() === 'function') {
