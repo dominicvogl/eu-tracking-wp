@@ -263,7 +263,7 @@ class EU_TRACKING_WP {
 
 	function google_analytics() {
 
-		if ( get_option( 'ga_property' ) ) {
+		if ( get_option( 'ga_property' ) || get_option( 'gtag_property' )) {
 			?>
 			<script class="js--google-analytics">
 
@@ -277,20 +277,36 @@ class EU_TRACKING_WP {
                         '[<?php echo $this->version; ?>] eu-tracking-wp: Cookies enabled' : '[<?php echo $this->version; ?>] eu-tracking-wp: Cookies disabled');
 
                     if (type === 'opt-in' && status === 'allow' && didConsent) {
-                        if(typeof load_Marketing_Tracking() === 'function') {
-                            load_Marketing_Tracking();
+    
+                        var gaProperty = '<?php esc_attr_e( get_option( 'ga_property' ) ); ?>';
+                        console.log(gaProperty);
+                        var gtagProperty = '<?php esc_attr_e( get_option( 'gtag_property' ) ); ?>';
+                        console.log(gtagProperty);
+                        
+                        console.log(gaProperty.length > 0);
+                        console.log(gtagProperty.length > 0);
+                        
+                        if(gaProperty.length > 0) {
+                            if(typeof load_Marketing_Tracking() === 'function') {
+                                load_Marketing_Tracking(gaProperty);
+                            }
+                        }
+                        
+                        if(gtagProperty.length > 0) {
+                            if(typeof load_Marketing_Tracking() === 'function') {
+                                load_googleTagManager(gtagProperty);
+                            }
                         }
                     }
-
 				};
 
-                var load_Marketing_Tracking = function () {
-
+                var load_Marketing_Tracking = function (gaProperty) {
+                    
                     if (document.cookie.indexOf(disableStr + '=true') > -1) {
                         window[disableStr] = true;
                     }
 
-                    var gaProperty = '<?php esc_attr_e( get_option( 'ga_property' ) ); ?>';
+                    //var gaProperty = '<?php //esc_attr_e( get_option( 'ga_property' ) ); ?>//';
                     var disableStr = 'ga-disable-' + gaProperty;
 
                     var gaOptout = function () {
@@ -315,6 +331,15 @@ class EU_TRACKING_WP {
                     ga('send', 'pageview');
 
                 };
+                
+                var load_googleTagManager = function (gtagProperty) {
+    
+                    console.log('Google Tag Manager');
+                
+                
+                    
+                
+                }
 
 			</script>
 			<?php
@@ -332,9 +357,9 @@ class EU_TRACKING_WP {
 
 		//create new top-level menu
 		add_menu_page(
-			'My Cool Plugin Settings',
+			__( 'EU Tracking - Optionen', 'etwp' ),
 			__( 'EU Tracking', 'etwp' ),
-			'editor',
+			'administrator',
 			__FILE__, array( $this, 'etwp_settings_page' ),
 			'dashicons-chart-line'
 		);
@@ -354,6 +379,7 @@ class EU_TRACKING_WP {
 		// list of settings to register
 		$inputs = array(
 			'ga_property',
+			'gtag_property',
 			'cc_header',
 			'cc_message',
 			'cc_url',
@@ -380,6 +406,32 @@ class EU_TRACKING_WP {
 			<form method="post" action="options.php">
 				<?php settings_fields( 'etwp-settings-group' ); ?>
 				<?php do_settings_sections( 'etwp-settings-group' ); ?>
+                
+                <h2>Cookie Consent Settings and Styles</h2>
+                <p><?php _e('Setup your Cookie Consent styles and settings', 'etwp'); ?></p>
+                
+                <table class="form-table">
+                    
+                    <tr valign="top">
+                        <th scope="row"><?php _e( 'Cookie Consent Header', 'etwp' ); ?></th>
+                        <td><input type="text" name="cc_header" value="<?php echo esc_attr( get_option( 'cc_header' ) ); ?>"/>
+                        </td>
+                    </tr>
+                    
+                    <tr valign="top">
+                        <th scope="row"><? _e( 'Your Cookieconsent Message', 'etwp' ); ?></th>
+                        <td><textarea name="cc_message"><?php echo esc_attr( get_option( 'cc_message' ) ); ?></textarea></td>
+                    </tr>
+                    
+                    <tr valign="top">
+                        <th scope="row"><? _e( 'Color Scheme', 'etwp' ); ?></th>
+                        <td><textarea name="cc_palette"><?php echo esc_attr( get_option( 'cc_palette' ) ); ?></textarea></td>
+                    </tr>
+                
+                </table>
+                
+                <h2>Google Analytics Universal Tracking</h2>
+                <p><?php _e('If you are using the Google Universal Tracking script, enter your data in this area', 'etwp'); ?></p>
 
 				<table class="form-table">
 					<tr valign="top">
@@ -388,23 +440,19 @@ class EU_TRACKING_WP {
 								   value="<?php echo esc_attr( get_option( 'ga_property' ) ); ?>"/></td>
 					</tr>
 
-					<tr valign="top">
-						<th scope="row"><?php _e( 'Cookie Consent Header', 'etwp' ); ?></th>
-						<td><input type="text" name="cc_header" value="<?php echo esc_attr( get_option( 'cc_header' ) ); ?>"/>
-						</td>
-					</tr>
-
-					<tr valign="top">
-						<th scope="row"><? _e( 'Your Cookieconsent Message', 'etwp' ); ?></th>
-						<td><textarea name="cc_message"><?php echo esc_attr( get_option( 'cc_message' ) ); ?></textarea></td>
-					</tr>
-
-					<tr valign="top">
-						<th scope="row"><? _e( 'Color Scheme', 'etwp' ); ?></th>
-						<td><textarea name="cc_palette"><?php echo esc_attr( get_option( 'cc_palette' ) ); ?></textarea></td>
-					</tr>
-
 				</table>
+                
+                <h2>Google Tag Manager</h2>
+                <p><?php _e('If you are using the Google Tag Manager, enter your data in this area', 'etwp'); ?></p>
+                
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row"><? _e( 'Google Tag Manager ID', 'etwp' ); ?></th>
+                        <td><input type="text" name="gtag_property"
+                                   value="<?php echo esc_attr( get_option( 'gtag_property' ) ); ?>"/></td>
+                    </tr>
+                
+                </table>
 
 				<?php submit_button(); ?>
 
