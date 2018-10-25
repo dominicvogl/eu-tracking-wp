@@ -320,7 +320,7 @@ class EU_TRACKING_WP {
                     ga('create', gaProperty, 'auto');
                     ga('set', 'anonymizeIp', true);
                     ga('send', 'pageview');
-
+    
                 };
                 
                 var load_googleTagManager = function (gtagProperty) {
@@ -449,7 +449,7 @@ class EU_TRACKING_WP {
                     <tr valign="top">
                         <th scope="row"><?php _e( esc_attr('Please add this snippet to your very first row after the opening <body> Tag'), 'etwp'); ?></th>
                         <td>
-                            <textarea readonly type="text" name="gtag_property">
+                            <textarea readonly type="text" name="gtag_snippet">
                                 <?php echo esc_textarea('<!-- Google Tag Manager (noscript) -->
                                 <noscript>
                                     <iframe src="https://www.googletagmanager.com/ns.html?id=<?php esc_attr_e( get_option(\'gtag_property\') ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
